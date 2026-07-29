@@ -19,11 +19,13 @@ import {
   assertStatePlanExecutionAllowed,
   createDeterministicStatePlan,
   detectLoginRequirement,
-  groupTargetsByState
+  groupTargetsByState,
+  inferLoginSelectors,
+  type LoginSelectorOverrides
 } from "@uiheal/state-planner";
 import { runA360Preflight, type A360PreflightResult } from "./a360.js";
 import { writeReportFile } from "../report/writeReport.js";
-import { executePlaywrightStateScan, type PlaywrightLoginSelectors } from "../stateful/playwrightState.js";
+import { executePlaywrightStateScan } from "../stateful/playwrightState.js";
 
 export interface A360LiveCliOptions {
   cdp: string;
@@ -66,7 +68,7 @@ export interface A360LivePlan {
     statePlanOut?: string;
     storageStatePath: string;
     headless: boolean;
-    selectors: PlaywrightLoginSelectors;
+    selectorOverrides: LoginSelectorOverrides;
   };
 }
 
@@ -90,10 +92,10 @@ export function planA360LivePreflight(options: A360LiveCliOptions): A360LivePlan
       statePlanOut: options.statePlanOut,
       storageStatePath: options.stateStorage || "reports/uiheal-storage-state.json",
       headless: options.stateHeadless === true,
-      selectors: {
-        username: options.loginUserSelector || "input[name='email'], input[type='email'], input[name='username']",
-        password: options.loginPasswordSelector || "input[type='password']",
-        submit: options.loginSubmitSelector || "button[type='submit'], input[type='submit']",
+      selectorOverrides: {
+        username: options.loginUserSelector,
+        password: options.loginPasswordSelector,
+        submit: options.loginSubmitSelector,
         expectedUrlPattern: options.loginExpectedUrl
       }
     }
@@ -162,16 +164,28 @@ export async function runA360LivePreflight(options: A360LiveCliOptions): Promise
       }
     }
 
-    let stateExecution: { storageStatePath: string; scannedUrls: string[]; candidateTargetIds: string[] } | undefined;
+    let stateExecution:
+      | {
+          storageStatePath: string;
+          scannedUrls: string[];
+          candidateTargetIds: string[];
+          inferredSelectors?: Record<string, unknown>;
+        }
+      | undefined;
     if (plan.stateful.mode === "execute" && loginRequirement.required) {
       const loginUrl = loginRequirement.loginState?.url;
       if (!loginUrl) throw new Error("Stateful execution requires a detected login URL");
+      const inferredSelectors = inferLoginSelectors({
+        loginState: loginRequirement.loginState,
+        missingStates: loginRequirement.missingStates,
+        overrides: plan.stateful.selectorOverrides
+      });
       const executedState = await executePlaywrightStateScan({
         loginUrl,
         allowOrigin: plan.stateful.allowOrigin ?? "",
         storageStatePath: plan.stateful.storageStatePath,
         headless: plan.stateful.headless,
-        selectors: plan.stateful.selectors,
+        selectors: inferredSelectors,
         missingGroups: loginRequirement.missingStates
       });
       for (const [targetId, candidates] of Object.entries(executedState.candidatesByTargetId)) {
@@ -180,7 +194,11 @@ export async function runA360LivePreflight(options: A360LiveCliOptions): Promise
       stateExecution = {
         storageStatePath: executedState.storageStatePath,
         scannedUrls: executedState.scannedUrls,
-        candidateTargetIds: Object.keys(executedState.candidatesByTargetId)
+        candidateTargetIds: Object.keys(executedState.candidatesByTargetId),
+        inferredSelectors: {
+          ...inferredSelectors,
+          password: "[redacted]"
+        }
       };
     }
 

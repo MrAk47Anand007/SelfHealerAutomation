@@ -26,12 +26,21 @@ export function renderHtmlReport(result: A360PreflightResult): string {
       ? `<p><strong>State plan:</strong> ${escapeHtml(String(result.statePlan.deterministicStatePlan.warning))}</p>`
       : "";
   const execution = result.statePlan?.execution as
-    | { storageStatePath?: string; scannedUrls?: string[]; candidateTargetIds?: string[] }
+    | {
+        storageStatePath?: string;
+        scannedUrls?: string[];
+        candidateTargetIds?: string[];
+        inferredSelectors?: Record<string, unknown>;
+      }
     | undefined;
   const stateExecution = execution
     ? `<p><strong>State execution:</strong> storage=${escapeHtml(execution.storageStatePath ?? "")}, scanned=${escapeHtml(
         (execution.scannedUrls ?? []).join(", ")
-      )}, targets=${escapeHtml((execution.candidateTargetIds ?? []).join(", "))}</p>`
+      )}, targets=${escapeHtml((execution.candidateTargetIds ?? []).join(", "))}</p>${
+        execution.inferredSelectors
+          ? `<pre>${escapeHtml(JSON.stringify(execution.inferredSelectors, null, 2))}</pre>`
+          : ""
+      }`
     : "";
   const aiGuidance = (result.aiGuidance ?? [])
     .map((item) => {

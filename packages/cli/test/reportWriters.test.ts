@@ -33,7 +33,8 @@ describe("report writers", () => {
         execution: {
           storageStatePath: "reports/state.json",
           scannedUrls: ["https://portal.test/dashboard"],
-          candidateTargetIds: ["target-1"]
+          candidateTargetIds: ["target-1"],
+          inferredSelectors: { username: "input#email", password: "[redacted]" }
         }
       }
     });
@@ -41,6 +42,7 @@ describe("report writers", () => {
     expect(html).toContain("State execution");
     expect(html).toContain("reports/state.json");
     expect(html).toContain("https://portal.test/dashboard");
+    expect(html).toContain("input#email");
   });
 
   it("writes report file", async () => {

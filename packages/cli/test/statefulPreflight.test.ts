@@ -24,7 +24,7 @@ describe("stateful preflight CLI planning", () => {
         statePlanOut: "reports/state-plan.playwright.ts",
         storageStatePath: "reports/state.json",
         headless: true,
-        selectors: {
+        selectorOverrides: {
           username: "#user",
           password: "#pass",
           submit: "#login",

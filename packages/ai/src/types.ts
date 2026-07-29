@@ -9,6 +9,7 @@ export interface OpenRouterOptions {
   apiKey?: string;
   model?: string;
   baseUrl?: string;
+  maxTokens?: number;
   fetchImpl?: typeof fetch;
 }
 

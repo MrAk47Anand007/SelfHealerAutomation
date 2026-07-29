@@ -25,6 +25,20 @@ export function renderHtmlReport(result: A360PreflightResult): string {
     "warning" in result.statePlan.deterministicStatePlan
       ? `<p><strong>State plan:</strong> ${escapeHtml(String(result.statePlan.deterministicStatePlan.warning))}</p>`
       : "";
+  const aiGuidance = (result.aiGuidance ?? [])
+    .map((item) => {
+      const targetId = typeof item.targetId === "string" ? item.targetId : "unknown target";
+      const model = typeof item.model === "string" ? item.model : "unknown model";
+      const rawText = typeof item.rawText === "string" ? item.rawText.trim() : "";
+      if (!rawText) return "";
+      return `<section>
+    <h2>AI Guidance</h2>
+    <p><strong>Target:</strong> ${escapeHtml(targetId)}<br><strong>Model:</strong> ${escapeHtml(model)}</p>
+    <pre>${escapeHtml(rawText)}</pre>
+  </section>`;
+    })
+    .filter(Boolean)
+    .join("\n");
   return `<!doctype html>
 <html>
 <head>
@@ -35,6 +49,7 @@ export function renderHtmlReport(result: A360PreflightResult): string {
     table { border-collapse: collapse; width: 100%; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background: #f4f6f8; }
+    pre { background: #f7f7f7; border: 1px solid #ddd; padding: 12px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -46,6 +61,7 @@ export function renderHtmlReport(result: A360PreflightResult): string {
     <thead><tr><th>Target</th><th>Status</th><th>Confidence</th><th>Reason</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
+  ${aiGuidance}
 </body>
 </html>`;
 }

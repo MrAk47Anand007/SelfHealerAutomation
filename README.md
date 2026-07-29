@@ -68,6 +68,10 @@ corepack pnpm build
 node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --ai guide --report html --out reports/a360-ai-preflight.html
 ```
 
+Recommended free model: `inclusionai/ling-3.0-flash:free`. In live A360 testing it returned usable selector-repair guidance, while some other free coding models were rate-limited or returned empty output. If that model is rate limited, use `openrouter/free` as a fallback router.
+
+For free models, keep `UIHEAL_AI_MAX_TOKENS` modest, for example `700`, to avoid rate-limit and quota pressure.
+
 Keep `.env` local. It is ignored by git.
 
 ## Stateful Login Planning

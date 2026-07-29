@@ -4,12 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "node scripts/pnpm-cli.mjs -r build",
     "test": "vitest run",
-    "typecheck": "pnpm -r typecheck",
-    "lint:types": "pnpm typecheck",
-    "verify": "pnpm test && pnpm typecheck && pnpm build",
-    "demo:generic": "pnpm --filter uiheal test -- cli.test.ts",
+    "typecheck": "node scripts/pnpm-cli.mjs -r typecheck",
+    "lint:types": "node scripts/pnpm-cli.mjs typecheck",
+    "verify": "node scripts/verify.mjs",
+    "demo:generic": "node scripts/pnpm-cli.mjs --filter uiheal test -- cli.test.ts",
     "test:e2e:offline": "vitest run packages/cli/test/e2eOffline.test.ts"
   },
   "devDependencies": {

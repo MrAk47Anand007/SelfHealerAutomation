@@ -1,0 +1,20 @@
+{
+  "name": "uiheal-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "vitest run",
+    "typecheck": "pnpm -r typecheck",
+    "lint:types": "pnpm typecheck",
+    "demo:generic": "pnpm --filter uiheal test -- cli.test.ts",
+    "test:e2e:offline": "vitest run packages/cli/test/e2eOffline.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

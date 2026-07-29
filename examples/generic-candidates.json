@@ -1,0 +1,16 @@
+[
+  {
+    "candidateId": "email-candidate",
+    "selector": {
+      "kind": "css",
+      "value": "input[name='email']",
+      "enabled": true
+    },
+    "element": {
+      "tag": "input",
+      "type": "email",
+      "name": "email",
+      "label": "Email:"
+    }
+  }
+]

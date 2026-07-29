@@ -1,0 +1,21 @@
+{
+  "targets": [
+    {
+      "id": "email",
+      "sourceTool": "generic",
+      "selectors": [
+        {
+          "kind": "css",
+          "value": "#old-email",
+          "enabled": true
+        }
+      ],
+      "element": {
+        "tag": "input",
+        "type": "email",
+        "name": "email",
+        "label": "Email:"
+      }
+    }
+  ]
+}

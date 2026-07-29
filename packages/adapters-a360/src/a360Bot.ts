@@ -1,5 +1,5 @@
 import type { UiSelector, UiTarget } from "@uiheal/core";
-import { decodeA360Blob, extractSurroundingContext } from "./a360Blob.js";
+import { decodeA360Blob, extractSurroundingContext, summarizeA360Blob } from "./a360Blob.js";
 
 type A360Value = { type?: string; string?: string; number?: string; boolean?: boolean };
 type A360Criteria = Record<string, { enabled: boolean; value: A360Value }>;
@@ -56,6 +56,7 @@ export function extractA360Targets(bot: A360BotContent): UiTarget[] {
       if (!uiObject) return [];
       const decoded = uiObject.blob ? decodeA360Blob(uiObject.blob) : {};
       const surroundingContext = extractSurroundingContext(decoded);
+      const blobSummary = summarizeA360Blob(decoded);
       const criteria = uiObject.criteria;
       const tag = criteriaString(criteria, "HTML Tag")?.toLowerCase();
       return [
@@ -80,7 +81,8 @@ export function extractA360Targets(bot: A360BotContent): UiTarget[] {
             uiAttributeName: uiAttribute?.name,
             controlType: uiObject.controlType,
             technologyType: uiObject.technologyType,
-            browserType: uiObject.browserType
+            browserType: uiObject.browserType,
+            a360Blob: blobSummary
           }
         }
       ];

@@ -22,5 +22,10 @@ describe("A360 bot adapter", () => {
     });
     expect(targets[0].selectors.map((selector) => selector.kind)).toContain("css");
     expect(targets[0].surroundingContext?.target?.name).toBe("email");
+    expect(targets[0].metadata?.a360Blob).toMatchObject({
+      captureVersion: 5700,
+      objNode: { name: "email", pathDepth: 1 },
+      hasSurroundingContext: true
+    });
   });
 });

@@ -8,15 +8,16 @@ This repository uses `pnpm` workspaces. Do not use `npm install`; npm will try t
 
 ```powershell
 cd "C:\Users\Anand\OneDrive - Xalta Technology Services Pvt Ltd\Desktop\SelfProjects\SelfHealerAutomation"
-corepack enable
 corepack prepare pnpm@9.0.0 --activate
-pnpm install
+corepack pnpm install
 ```
+
+If `corepack enable` fails with `EPERM` on Windows, that only means Corepack could not create a global `pnpm` shim under `C:\Program Files\nodejs`. You can still use `corepack pnpm ...` commands from the project folder without admin rights.
 
 ## Verify
 
 ```powershell
-pnpm verify
+corepack pnpm verify
 ```
 
 That runs:

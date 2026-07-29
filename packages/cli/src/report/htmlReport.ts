@@ -25,6 +25,14 @@ export function renderHtmlReport(result: A360PreflightResult): string {
     "warning" in result.statePlan.deterministicStatePlan
       ? `<p><strong>State plan:</strong> ${escapeHtml(String(result.statePlan.deterministicStatePlan.warning))}</p>`
       : "";
+  const execution = result.statePlan?.execution as
+    | { storageStatePath?: string; scannedUrls?: string[]; candidateTargetIds?: string[] }
+    | undefined;
+  const stateExecution = execution
+    ? `<p><strong>State execution:</strong> storage=${escapeHtml(execution.storageStatePath ?? "")}, scanned=${escapeHtml(
+        (execution.scannedUrls ?? []).join(", ")
+      )}, targets=${escapeHtml((execution.candidateTargetIds ?? []).join(", "))}</p>`
+    : "";
   const aiGuidance = (result.aiGuidance ?? [])
     .map((item) => {
       const targetId = typeof item.targetId === "string" ? item.targetId : "unknown target";
@@ -57,6 +65,7 @@ export function renderHtmlReport(result: A360PreflightResult): string {
   <p>Total: ${result.summary.total}, Pass: ${result.summary.pass}, Repairable: ${result.summary.repairable}, Failed: ${result.summary.failed}</p>
   ${aiWarning}
   ${stateWarning}
+  ${stateExecution}
   <table>
     <thead><tr><th>Target</th><th>Status</th><th>Confidence</th><th>Reason</th></tr></thead>
     <tbody>${rows}</tbody>

@@ -21,6 +21,7 @@
     "@uiheal/cdp": "workspace:*",
     "@uiheal/core": "workspace:*",
     "@uiheal/state-planner": "workspace:*",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "playwright": "^1.49.0"
   }
 }

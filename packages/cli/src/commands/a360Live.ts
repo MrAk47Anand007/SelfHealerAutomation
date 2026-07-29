@@ -23,6 +23,7 @@ import {
 } from "@uiheal/state-planner";
 import { runA360Preflight, type A360PreflightResult } from "./a360.js";
 import { writeReportFile } from "../report/writeReport.js";
+import { executePlaywrightStateScan, type PlaywrightLoginSelectors } from "../stateful/playwrightState.js";
 
 export interface A360LiveCliOptions {
   cdp: string;
@@ -38,6 +39,12 @@ export interface A360LiveCliOptions {
   allowOrigin?: string;
   executeStatePlan?: boolean;
   statePlanOut?: string;
+  stateStorage?: string;
+  stateHeadless?: boolean;
+  loginUserSelector?: string;
+  loginPasswordSelector?: string;
+  loginSubmitSelector?: string;
+  loginExpectedUrl?: string;
 }
 
 export interface A360LivePlan {
@@ -57,6 +64,9 @@ export interface A360LivePlan {
     allowOrigin?: string;
     execute: boolean;
     statePlanOut?: string;
+    storageStatePath: string;
+    headless: boolean;
+    selectors: PlaywrightLoginSelectors;
   };
 }
 
@@ -77,7 +87,15 @@ export function planA360LivePreflight(options: A360LiveCliOptions): A360LivePlan
       mode: options.stateful || "manual",
       allowOrigin: options.allowOrigin,
       execute: options.executeStatePlan === true,
-      statePlanOut: options.statePlanOut
+      statePlanOut: options.statePlanOut,
+      storageStatePath: options.stateStorage || "reports/uiheal-storage-state.json",
+      headless: options.stateHeadless === true,
+      selectors: {
+        username: options.loginUserSelector || "input[name='email'], input[type='email'], input[name='username']",
+        password: options.loginPasswordSelector || "input[type='password']",
+        submit: options.loginSubmitSelector || "button[type='submit'], input[type='submit']",
+        expectedUrlPattern: options.loginExpectedUrl
+      }
     }
   };
 }
@@ -144,6 +162,28 @@ export async function runA360LivePreflight(options: A360LiveCliOptions): Promise
       }
     }
 
+    let stateExecution: { storageStatePath: string; scannedUrls: string[]; candidateTargetIds: string[] } | undefined;
+    if (plan.stateful.mode === "execute" && loginRequirement.required) {
+      const loginUrl = loginRequirement.loginState?.url;
+      if (!loginUrl) throw new Error("Stateful execution requires a detected login URL");
+      const executedState = await executePlaywrightStateScan({
+        loginUrl,
+        allowOrigin: plan.stateful.allowOrigin ?? "",
+        storageStatePath: plan.stateful.storageStatePath,
+        headless: plan.stateful.headless,
+        selectors: plan.stateful.selectors,
+        missingGroups: loginRequirement.missingStates
+      });
+      for (const [targetId, candidates] of Object.entries(executedState.candidatesByTargetId)) {
+        candidatesByTargetId[targetId] = candidates;
+      }
+      stateExecution = {
+        storageStatePath: executedState.storageStatePath,
+        scannedUrls: executedState.scannedUrls,
+        candidateTargetIds: Object.keys(executedState.candidatesByTargetId)
+      };
+    }
+
     const result = await runA360Preflight({ bot, candidatesByTargetId });
     result.statePlan = {
       groups: stateGroups.map((group) => ({ stateId: group.stateId, origin: group.origin, url: group.url, targetCount: group.targets.length })),
@@ -151,7 +191,8 @@ export async function runA360LivePreflight(options: A360LiveCliOptions): Promise
       deterministicStatePlan: {
         ...deterministicStatePlan,
         script: deterministicStatePlan.script ? "[written to state plan artifact]" : undefined
-      }
+      },
+      execution: stateExecution
     };
 
     const aiWarning = buildAiWarningForMissingKey(plan.ai);

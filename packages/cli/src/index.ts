@@ -31,10 +31,16 @@ a360
   .option("--ai-provider <provider>", "AI provider", "openrouter")
   .option("--ai-model <model>", "AI model slug")
   .option("--ai-max-targets <number>", "Maximum targets to send for AI guidance", "5")
-  .option("--stateful <mode>", "Stateful mode: manual, assist, or execute", "manual")
-  .option("--allow-origin <origin>", "Allowed origin for state-plan execution")
-  .option("--execute-state-plan", "Execute state plan after safety checks", false)
-  .option("--state-plan-out <path>", "Write generated state plan script to a file")
+    .option("--stateful <mode>", "Stateful mode: manual, assist, or execute", "manual")
+    .option("--allow-origin <origin>", "Allowed origin for state-plan execution")
+    .option("--execute-state-plan", "Execute state plan after safety checks", false)
+    .option("--state-plan-out <path>", "Write generated state plan script to a file")
+    .option("--state-storage <path>", "Write/read Playwright storage state for stateful execution", "reports/uiheal-storage-state.json")
+    .option("--state-headless", "Run Playwright state setup in headless mode", false)
+    .option("--login-user-selector <selector>", "Login username/email selector")
+    .option("--login-password-selector <selector>", "Login password selector")
+    .option("--login-submit-selector <selector>", "Login submit selector")
+    .option("--login-expected-url <pattern>", "Playwright URL pattern expected after login")
   .action(async (options) => {
     const result = await runA360LivePreflight(options);
     const content = options.report === "json" ? renderJsonReport(result) : renderHtmlReport(result);

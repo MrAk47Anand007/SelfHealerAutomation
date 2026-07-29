@@ -80,4 +80,35 @@ Keep `.env` local. It is ignored by git.
 node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --stateful assist --allow-origin https://acme-test.uipath.com --state-plan-out reports/state-plan.review.playwright.ts
 ```
 
+## Stateful Login Execution
+
+Use this when the bot has login-page actions and post-login actions, but only the login page is currently available in CDP. The CLI logs in with Playwright, saves storage state, opens the missing post-login URLs with that state, and scans those pages before producing the final report.
+
+```powershell
+$env:UIHEAL_LOGIN_USER="your_login_user"
+$env:UIHEAL_LOGIN_PASS="your_login_password"
+
+node packages/cli/dist/index.js a360 preflight `
+  --cdp 9222 `
+  --file-id 100126347 `
+  --stateful execute `
+  --execute-state-plan `
+  --allow-origin https://acme-test.uipath.com `
+  --login-user-selector "input[name='email'], input[type='email']" `
+  --login-password-selector "input[type='password']" `
+  --login-submit-selector "button[type='submit'], input[type='submit']" `
+  --login-expected-url "**/work-items" `
+  --state-storage reports/uiheal-storage-state.json `
+  --report html `
+  --out reports/a360-stateful-execute.html
+```
+
+For first-time Playwright setup on a machine:
+
+```powershell
+corepack pnpm exec playwright install chromium
+```
+
+The execution mode refuses to run unless both `--execute-state-plan` and `--allow-origin` are present. Credentials and storage state files stay local and are ignored by git.
+
 Review generated scripts before using execute mode against enterprise portals.

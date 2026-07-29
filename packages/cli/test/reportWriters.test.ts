@@ -24,6 +24,25 @@ describe("report writers", () => {
     expect(html).toContain("&lt;repair&gt;");
   });
 
+  it("renders state execution details in HTML reports", () => {
+    const html = renderHtmlReport({
+      results: [],
+      patchPlans: [],
+      summary: { total: 0, pass: 0, repairable: 0, failed: 0 },
+      statePlan: {
+        execution: {
+          storageStatePath: "reports/state.json",
+          scannedUrls: ["https://portal.test/dashboard"],
+          candidateTargetIds: ["target-1"]
+        }
+      }
+    });
+
+    expect(html).toContain("State execution");
+    expect(html).toContain("reports/state.json");
+    expect(html).toContain("https://portal.test/dashboard");
+  });
+
   it("writes report file", async () => {
     const dir = mkdtempSync(join(tmpdir(), "uiheal-"));
     const path = join(dir, "report.html");

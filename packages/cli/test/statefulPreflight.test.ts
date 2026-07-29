@@ -8,14 +8,28 @@ describe("stateful preflight CLI planning", () => {
         cdp: "9222",
         stateful: "assist",
         allowOrigin: "https://portal",
-        statePlanOut: "reports/state-plan.playwright.ts"
+        statePlanOut: "reports/state-plan.playwright.ts",
+        stateStorage: "reports/state.json",
+        stateHeadless: true,
+        loginUserSelector: "#user",
+        loginPasswordSelector: "#pass",
+        loginSubmitSelector: "#login",
+        loginExpectedUrl: "**/dashboard"
       })
     ).toMatchObject({
       stateful: {
         mode: "assist",
         allowOrigin: "https://portal",
         execute: false,
-        statePlanOut: "reports/state-plan.playwright.ts"
+        statePlanOut: "reports/state-plan.playwright.ts",
+        storageStatePath: "reports/state.json",
+        headless: true,
+        selectors: {
+          username: "#user",
+          password: "#pass",
+          submit: "#login",
+          expectedUrlPattern: "**/dashboard"
+        }
       }
     });
   });

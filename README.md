@@ -1,0 +1,65 @@
+# SelfHealerAutomation
+
+Local-first UI automation preflight and healing toolkit for A360, Playwright, Selenium, and Puppeteer flows.
+
+## Setup
+
+This repository uses `pnpm` workspaces. Do not use `npm install`; npm will try to resolve the pnpm workspace layout and can fail with peer-dependency conflicts.
+
+```powershell
+cd "C:\Users\Anand\OneDrive - Xalta Technology Services Pvt Ltd\Desktop\SelfProjects\SelfHealerAutomation"
+corepack enable
+corepack prepare pnpm@9.0.0 --activate
+pnpm install
+```
+
+## Verify
+
+```powershell
+pnpm verify
+```
+
+That runs:
+
+- `pnpm test`
+- `pnpm typecheck`
+- `pnpm build`
+
+## Offline CLI Smoke Test
+
+```powershell
+pnpm test:e2e:offline
+```
+
+## A360 Live Preflight
+
+Start Chrome with CDP:
+
+```powershell
+cd "C:\Program Files\Google\Chrome\Application"
+chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\chrome-dev-profile"
+```
+
+Log in to A360 Control Room and the target website in that Chrome profile, then run:
+
+```powershell
+node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --report html --out reports/a360-preflight.html
+start reports/a360-preflight.html
+```
+
+Replace `100126347` with the real A360 bot file id.
+
+## AI Guidance
+
+```powershell
+$env:OPENROUTER_API_KEY="your_key_here"
+node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --ai guide --report html --out reports/a360-ai-preflight.html
+```
+
+## Stateful Login Planning
+
+```powershell
+node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --stateful assist --allow-origin https://acme-test.uipath.com --state-plan-out reports/state-plan.review.playwright.ts
+```
+
+Review generated scripts before using execute mode against enterprise portals.

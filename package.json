@@ -8,6 +8,7 @@
     "test": "vitest run",
     "typecheck": "pnpm -r typecheck",
     "lint:types": "pnpm typecheck",
+    "verify": "pnpm test && pnpm typecheck && pnpm build",
     "demo:generic": "pnpm --filter uiheal test -- cli.test.ts",
     "test:e2e:offline": "vitest run packages/cli/test/e2eOffline.test.ts"
   },

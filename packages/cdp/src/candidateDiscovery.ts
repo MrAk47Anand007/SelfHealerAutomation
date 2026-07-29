@@ -5,6 +5,7 @@ export function buildCandidateDiscoveryExpression(target: UiTarget): string {
     const target = ${JSON.stringify(target)};
     const candidates = new Map();
     function cssFor(el) {
+      if (!el) return null;
       if (el.id) return "#" + CSS.escape(el.id);
       const name = el.getAttribute("name");
       if (name) return el.tagName.toLowerCase() + "[name='" + CSS.escape(name) + "']";
@@ -13,7 +14,7 @@ export function buildCandidateDiscoveryExpression(target: UiTarget): string {
       return el.tagName.toLowerCase();
     }
     function add(el, selectorValue, reason) {
-      if (!el) return;
+      if (!el || !selectorValue) return;
       const rect = el.getBoundingClientRect();
       const key = selectorValue + "|" + rect.x + "|" + rect.y;
       if (candidates.has(key)) return;
@@ -46,7 +47,10 @@ export function buildCandidateDiscoveryExpression(target: UiTarget): string {
     for (const selector of target.selectors || []) {
       if (!selector.enabled) continue;
       if (selector.kind === "css") { try { add(document.querySelector(selector.value), selector.value, "stored-css"); } catch(e) {} }
-      if (selector.kind === "xpath") add(byXPath(selector.value), cssFor(byXPath(selector.value)), "stored-xpath");
+      if (selector.kind === "xpath") {
+        const xpathElement = byXPath(selector.value);
+        add(xpathElement, cssFor(xpathElement), "stored-xpath");
+      }
       if (selector.kind === "id") add(document.getElementById(selector.value), "#" + CSS.escape(selector.value), "stored-id");
       if (selector.kind === "name") document.querySelectorAll('[name="' + CSS.escape(selector.value) + '"]').forEach((el) => add(el, cssFor(el), "stored-name"));
     }

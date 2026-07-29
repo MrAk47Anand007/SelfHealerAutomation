@@ -7,8 +7,23 @@ export interface RuntimeEvaluateInput {
 }
 
 export function extractRuntimeValue<T>(response: any): T {
-  const exceptionText = response?.result?.exceptionDetails?.text;
-  if (exceptionText) throw new Error(exceptionText);
+  const exceptionDetails = response?.result?.exceptionDetails;
+  if (exceptionDetails) {
+    const exception = exceptionDetails.exception;
+    const stack = exceptionDetails.stackTrace?.callFrames
+      ?.slice(0, 3)
+      .map((frame: any) => `${frame.functionName || "<anonymous>"} (${frame.url || "eval"}:${frame.lineNumber}:${frame.columnNumber})`)
+      .join("; ");
+    const message = [
+      exception?.description,
+      exception?.value,
+      exceptionDetails.text,
+      stack ? `Stack: ${stack}` : undefined
+    ]
+      .filter(Boolean)
+      .join("\n");
+    throw new Error(message || "CDP Runtime.evaluate failed");
+  }
   return response?.result?.result?.value as T;
 }
 

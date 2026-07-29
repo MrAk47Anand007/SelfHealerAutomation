@@ -6,5 +6,6 @@ coverage/
 !.env.example
 *.log
 reports/
+backups/
 tmp/
 a360 extension code/

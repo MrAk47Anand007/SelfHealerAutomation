@@ -32,6 +32,33 @@ That runs:
 pnpm test:e2e:offline
 ```
 
+## Enterprise UIHeal Run Artifact
+
+The enterprise flow uses a universal `UIHealRun` JSON artifact across A360, Playwright, Selenium, Puppeteer, and generic target catalogs.
+
+```powershell
+node packages/cli/dist/index.js analyze --tool generic --targets examples/generic-targets.json --candidates examples/generic-candidates.json --out reports/run.json
+
+node packages/cli/dist/index.js plan --run reports/run.json --report html --out reports/preflight.html
+
+node packages/cli/dist/index.js heal-rerun `
+  --run reports/run.json `
+  --policy uiheal.config.example.json `
+  --allow-origin https://acme-test.uipath.com `
+  --backup-dir backups `
+  --out reports/healed-run.json
+```
+
+Tool-specific shortcuts produce the same run artifact:
+
+```powershell
+node packages/cli/dist/index.js playwright preflight --file examples/playwright-login.spec.ts --mode analyze --out reports/playwright-run.json
+node packages/cli/dist/index.js selenium preflight --file examples/selenium-login.py --mode analyze --out reports/selenium-run.json
+node packages/cli/dist/index.js puppeteer preflight --file examples/puppeteer-login.js --mode analyze --out reports/puppeteer-run.json
+```
+
+`heal-rerun` is policy-gated. In this phase it creates backup/audit evidence and a patch preview/rerun comparison, but does not execute full business workflows.
+
 ## A360 Live Preflight
 
 Start Chrome with CDP:

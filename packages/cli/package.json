@@ -18,6 +18,7 @@
     "@uiheal/adapters-puppeteer": "workspace:*",
     "@uiheal/adapters-selenium": "workspace:*",
     "@uiheal/ai": "workspace:*",
+    "@uiheal/artifacts": "workspace:*",
     "@uiheal/cdp": "workspace:*",
     "@uiheal/core": "workspace:*",
     "@uiheal/state-planner": "workspace:*",

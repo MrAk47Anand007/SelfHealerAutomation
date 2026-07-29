@@ -57,6 +57,15 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/artifacts:
+    dependencies:
+      '@uiheal/core':
+        specifier: workspace:*
+        version: link:../core
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+
   packages/cdp:
     dependencies:
       '@uiheal/core':
@@ -83,6 +92,9 @@ importers:
       '@uiheal/ai':
         specifier: workspace:*
         version: link:../ai
+      '@uiheal/artifacts':
+        specifier: workspace:*
+        version: link:../artifacts
       '@uiheal/cdp':
         specifier: workspace:*
         version: link:../cdp

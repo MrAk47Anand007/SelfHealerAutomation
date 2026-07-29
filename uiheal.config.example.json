@@ -1,0 +1,8 @@
+{
+  "allowedTools": ["a360", "playwright", "selenium", "puppeteer", "generic"],
+  "allowedOrigins": ["https://acme-test.uipath.com"],
+  "minAutoHealConfidence": 0.85,
+  "allowDestructiveActions": false,
+  "allowApply": true,
+  "redactSecrets": true
+}

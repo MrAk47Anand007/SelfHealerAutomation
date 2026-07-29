@@ -52,10 +52,23 @@ Replace `100126347` with the real A360 bot file id.
 
 ## AI Guidance
 
+Option A, PowerShell session only:
+
 ```powershell
 $env:OPENROUTER_API_KEY="your_key_here"
 node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --ai guide --report html --out reports/a360-ai-preflight.html
 ```
+
+Option B, repeated local testing:
+
+```powershell
+Copy-Item .env.example .env
+notepad .env
+corepack pnpm build
+node packages/cli/dist/index.js a360 preflight --cdp 9222 --file-id 100126347 --ai guide --report html --out reports/a360-ai-preflight.html
+```
+
+Keep `.env` local. It is ignored by git.
 
 ## Stateful Login Planning
 

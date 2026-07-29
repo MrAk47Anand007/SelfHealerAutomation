@@ -9,6 +9,9 @@ import { writeJsonFile } from "./io/readWriteJson.js";
 import { renderHtmlReport } from "./report/htmlReport.js";
 import { renderJsonReport } from "./report/jsonReport.js";
 import { writeReportFile } from "./report/writeReport.js";
+import { loadLocalEnv } from "./env.js";
+
+loadLocalEnv();
 
 const program = new Command();
 
